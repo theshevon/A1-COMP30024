@@ -7,11 +7,13 @@ Authors:
 
 import sys
 import json
+from astar import *
 
 def main():
     with open(sys.argv[1]) as file:
         data = json.load(file)
     print_board(board_dict=data, debug=True)
+    findPath(data)
     # TODO: Search for and output winning sequence of moves
     # ...
 
@@ -103,7 +105,6 @@ def print_board(board_dict, message="", debug=False, **kwargs):
     # fill in the template to create the board drawing, then print!
     board = template.format(message, *cells)
     print(board, **kwargs)
-
 
 # when this module is executed, run the `main` function:
 if __name__ == '__main__':
