@@ -2,18 +2,18 @@
 COMP30024 Artificial Intelligence, Semester 1 2019
 Solution to Project Part A: Searching
 
-Authors: 
+Authors: David Crowe, Shevon Mendis
 """
 
 import sys
 import json
-import jumpAstar
+from astar import *
 
 def main():
     with open(sys.argv[1]) as file:
         data = json.load(file)
     print_board(board_dict=data, debug=True)
-    jumpAstar.findPath(data)
+    findPath(data)
     # TODO: Search for and output winning sequence of moves
     # ...
 
