@@ -7,11 +7,13 @@ Authors:
 
 import sys
 import json
+import jumpAstar
 
 def main():
     with open(sys.argv[1]) as file:
         data = json.load(file)
     print_board(board_dict=data, debug=True)
+    jumpAstar.findPath(data)
     # TODO: Search for and output winning sequence of moves
     # ...
 

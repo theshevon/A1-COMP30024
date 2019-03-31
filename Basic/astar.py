@@ -179,6 +179,5 @@ def print_path(starting_node, target_node):
     # base condition
     if target_node.parent != starting_node:
         print_path(starting_node, target_node.parent)
-    move = move_.format(target_node.parent.location, target_node.location)
-    print(move)
+    print(move_.format(target_node.parent.location, target_node.location))
 
