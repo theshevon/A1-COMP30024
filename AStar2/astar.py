@@ -10,12 +10,8 @@ def findPath(data):
     
     board          = Board(3, data)
     exit_locations = board.all_exit_locations[data["colour"]]
-
-    # TODO get paths and inspect
     
-    for piece in data["pieces"]:
-
-        print("-----moving new piece-----")
+    for piece_no, piece in enumerate(data["pieces"]):
 
         # nodes for which we have calculated the f cost and need to be evaluated
         open_nodes = []
@@ -30,7 +26,7 @@ def findPath(data):
 
         open_nodes.append(starting_node)
 
-        traversable_nodes = board.get_traversable_nodes(piece, data["blocks"])
+        traversable_nodes = board.get_traversable_nodes(data["pieces"][:piece_no+1], data["blocks"])
 
         while open_nodes:
             

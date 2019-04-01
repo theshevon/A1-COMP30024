@@ -42,7 +42,6 @@ class Board:
         for node in self.all_nodes:
             node.h_cost = self.get_distance_estimate(node, self.exit_line_cfs[colour])
 
-
     def get_distance_estimate(self, node, cfs):
         '''returns the minimum possible moves from each node to any exit nodes'''
         
@@ -54,7 +53,7 @@ class Board:
 
         return min_jump_cost
 
-    def get_traversable_nodes(self, piece_location, blocks_locations):
+    def get_traversable_nodes(self, piece_locations, blocks_locations):
         '''returns a list of all the nodes that can be traversed'''
 
         traversable_nodes = []
@@ -62,7 +61,7 @@ class Board:
         for node in self.all_nodes:
             
             # a node can be traversed if it isn't occupied by the piece or a block
-            if (node.location != piece_location) and (node.location not in blocks_locations):
+            if (node.location not in piece_locations) and (node.location not in blocks_locations):
                 traversable_nodes.append(node)
 
         return traversable_nodes
