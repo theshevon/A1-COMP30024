@@ -88,6 +88,8 @@ def get_explorable_nodes(board, traversable_nodes,curr_node):
         if landing_node and board.is_on_board(landing_node.location) and landing_node in traversable_nodes:
             explorable_nodes.append(landing_node)
 
+    # print("Current:", curr_node.location)
+    # print("Explorables:", [node.location for node in explorable_nodes])
     return explorable_nodes
 
 def print_path(starting_node, target_node, board, exit_locs):

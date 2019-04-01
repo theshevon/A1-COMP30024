@@ -183,7 +183,9 @@ def getExplorableNodes(currentLocation, blockSet, pieceSet, board):
                 if landingLoc in board.tiles.keys() and landingLoc not in blockSet and landingLoc not in pieceSet:
                     explorableNodes.append(landingLoc)                    
             else:
-                explorableNodes.append(loc)         
+                explorableNodes.append(loc)   
+    # print("curr:", currentLocation)
+    # print("Explorables:", [[l.qCoord,l.rCoord] for l in explorableNodes])   
     return explorableNodes
             
 
