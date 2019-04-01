@@ -86,6 +86,7 @@ class Board:
         #Shortest number of moves between node and any exit node
         #ie if the piece could jump whenever possible
         jumpCost = stepCost//2 + stepCost%2
+        print("Jump Cost: {}, Start Cost: {}", stepCost, jumpCost)
         return jumpCost
 
     def printBoard(self):
@@ -136,10 +137,7 @@ def findPath(data):
         open_nodes.add(start_loc)
         while open_nodes:
 
-
             currentNode = find_lowest_scoring(open_nodes, board)
-
-            # print(currentNode)
 
             #moves currentNode from open set to closed set
             open_nodes.remove(currentNode)
@@ -216,23 +214,6 @@ def find_lowest_scoring(locations, board):
             lowestScoringCoord = location
             lowestScore = board.tiles[location].f_cost
     return lowestScoringCoord        
-
-def print_path(starting_node, target_node, board):
-    '''prints the traversal path'''
-
-    # base condition
-    if board.tiles[target_node].parent != starting_node:
-        print_path(starting_node, board.tiles[target_node].parent, board)
-
-    if target_node in adjacentnodes(board.tiles[target_node].parent):
-        move = move_.format(board.tiles[target_node].parent, target_node)
-    else :
-        move = jump_.format(board.tiles[target_node].parent, target_node)
-
-    print(move)
-
-    if(target_node in board.exit_locations):
-        print(exit_.format(target_node))    
 
 
 

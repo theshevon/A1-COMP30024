@@ -7,7 +7,7 @@ Authors: David Crowe, Shevon Mendis
 
 import sys
 import json
-from astar import *
+from astar import findPath
 
 def main():
     with open(sys.argv[1]) as file:

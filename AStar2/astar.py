@@ -1,139 +1,21 @@
-# g_cost is the cost from starting node
-# h_cost is the cost from the target node
-# f_cost = g_cost + h_cost
-
-from math import sqrt
+from board import *
 import sys
 
-class Node:
-
-    location = None
-    parent   = None
-    g_cost   = None
-    h_cost   = None
-    f_cost   = None
-
-    def __init__(self, location):
-        self.location = location
-
-    def reset(self):
-        location = None
-        parent   = None
-        g_cost   = None
-        h_cost   = None
-        f_cost   = None
-
-    # purely for debugging purposes
-    def print_info(self):
-        print("Location:", self.location)
-        print("Parent:", self.parent)
-        print("g(n) =", self.g_cost)
-        print("h(n) =", self.h_cost)
-        print("f(n) =", self.f_cost)
-
-class Board:
-
-    # size of the board
-    size = 3
-   
-    # exit nodes for the pieces 
-    exit_nodes = {
-                    "red"   : [ Node([3,-3]), Node([3,-2]),  Node([3,-1]),  Node([3,0])],
-                    "blue"  : [ Node([-3,3]), Node([-2,3]),  Node([-1,3]),  Node([0,3])],
-                    "green" : [ Node([-3,0]), Node([-2,-1]), Node([-1,-2]), Node([0,-3])]
-                 }
-
-    all_nodes         = []
-    nodes_by_location = {}
-    traversable_nodes = []
-
-    def __init__(self, data):
-
-        self.initialise_nodes()
-        self.discover_traversable_nodes(data["pieces"], data["blocks"])
-        print([node.location for node in self.traversable_nodes])
-    
-    def initialise_nodes(self):
-        '''initialises/ resets a list of all the nodes on the board'''
-
-        r_start = 0
-        for q in range(-self.size, self.size+1):
-            for r in range(r_start, self.size+1):
-                self.all_nodes.append(Node([q,r]))
-            r_start -= 1
-
-        return
-
-    def discover_traversable_nodes(self, pieces, blocks):
-        '''updates the list of all the nodes that can be traversed'''
-
-        for node in self.all_nodes:
-            
-            # a node can be traversed if it isn't occupied by a piece or a block
-            if (node.location not in pieces) and (node.location not in blocks):
-                self.traversable_nodes.append(node)
-
-        return 
-
-    def update_nodes(self, starting_node, target_node):
-        '''updates the costs for each node'''
-        
-        for node in self.all_nodes:
-            node.g_cost = self.get_dist(node.location, starting_node.location)
-            node.h_cost = self.get_dist(node.location, target_node.location)
-            node.f_cost = node.g_cost + node.h_cost
-
-        return
-
-    def get_exit_nodes(self, colour):
-        '''returns a list of accessible exit nodes for a particular colour'''
-
-        return self.exit_nodes[colour]
-
-    def get_neighbouring_nodes(self, current_node):
-        '''returns a list of accessible neighbouring nodes'''
-
-        neighbours = []
-
-        r_start = current_node.location[1]
-        r_end = current_node.location[1] + 2
-        col = 0
-        for q in range(current_node.location[0]-1, current_node.location[0]+2):
-            for r in range(r_start, r_end):
-                if [q,r] == current_node.location:
-                    continue
-                for node in self.traversable_nodes:
-                    if node.location == [q,r]:
-                        neighbours.append(node)
-            col += 1
-            
-            if col == 1:
-                r_start -= 1
-            
-            if col == 2:
-                r_end -= 1
-
-        return neighbours
-
-    def reset_nodes(self):
-        '''resets all the nodes on the board'''
-
-        for node in self.all_nodes:
-            node.reset()
-
-    def get_dist(self, coord1, coord2):
-        '''returns the euclidean distance between two node locations'''
-
-        return sqrt((coord1[0] - coord2[0])**2 + (coord1[1] - coord2[1])**2)
-        
+ # actions
+move_ = "MOVE from {} to {}"
+jump_ = "JUMP from {} to {}"
+exit_ = "EXIT from {}"
 
 def findPath(data):
     
-    board = Board(data)
-    exit_nodes = board.get_exit_nodes(data["colour"])[0]
+    board          = Board(3, data)
+    exit_locations = board.all_exit_locations[data["colour"]]
+
+    # TODO get paths and inspect
     
-    paths = []
     for piece in data["pieces"]:
+
+        print("-----moving new piece-----")
 
         # nodes for which we have calculated the f cost and need to be evaluated
         open_nodes = []
@@ -141,41 +23,41 @@ def findPath(data):
         # nodes which we have evaluated
         closed_nodes = []
 
-        starting_node = Node(piece)
-
-        # TODO get closest exit 
-        target_node = exit_nodes[0]
-
-        # update all the nodes relative to the starting and target points
-        board.update_nodes(starting_node, target_node)
+        # get starting node and initialise it costs
+        starting_node = board.get_node(piece)
+        starting_node.f_cost = 0
+        starting_node.g_cost = 0
 
         open_nodes.append(starting_node)
 
-        while True:
+        traversable_nodes = board.get_traversable_nodes(piece, data["blocks"])
 
+        while open_nodes:
+            
             # sort the open_nodes in increasing order of f(n)
             open_nodes.sort(key=lambda x:x.f_cost)
             
-            # remove node in open list with lowest f cost
+            # remove node in open list with lowest f cost and expand it
             current_node = open_nodes.pop(0)
-            # this node has now been explored
             closed_nodes.append(current_node)
             
-            if current_node.location == target_node.location:
+            # stop if we've reached exit
+            if current_node.location in exit_locations:
                 break
 
             # for each neighbour of the current node
-            for node in board.get_neighbouring_nodes(current_node):
+            for node in get_explorable_nodes(board, traversable_nodes, current_node):
 
                 if node in closed_nodes:
                     continue
 
-                # if new path to neighbour is shorter or neighbour is not in open
-                traversal_cost = board.get_dist(current_node.location, node.location) + current_node.f_cost
-                if (traversal_cost < node.f_cost) or (node not in open_nodes):
+                traversal_cost = 1 + current_node.g_cost
+                if (traversal_cost < node.g_cost) or (node not in open_nodes):
 
-                    # set f cost of neighbour
-                    node.f_cost = traversal_cost
+                    # set costs of neighbour
+                    node.g_cost = traversal_cost
+                    node.f_cost = traversal_cost + node.h_cost
+
                     # set parent of neighbour to current
                     node.parent = current_node
                     
@@ -183,8 +65,47 @@ def findPath(data):
                     if node not in open_nodes:
                         open_nodes.append(node)
 
+        print_path(starting_node, current_node, board, exit_locations)
+
         # clear the node costs for the board
         board.reset_nodes()
 
+
+def get_explorable_nodes(board, traversable_nodes,curr_node):
+    '''returns a list of all the nodes that can be explored from the current
+        node'''
+    
+    explorable_nodes = []
+
+    for node in board.get_neighbouring_nodes(curr_node.location):
+
+        # add node only if traversable
+        if node in traversable_nodes:
+            explorable_nodes.append(node)
         
+        # find possible jumping locations
+        landing_node = board.get_landing_node(curr_node, node)
+        if landing_node and board.is_on_board(landing_node.location) and landing_node in traversable_nodes:
+            explorable_nodes.append(landing_node)
+
+    return explorable_nodes
+
+def print_path(starting_node, target_node, board, exit_locs):
+    '''prints the traversal path'''
+
+    # base condition
+    if target_node.parent != starting_node:
+        print_path(starting_node, target_node.parent, board, exit_locs)
+
+    if target_node in board.get_neighbouring_nodes(target_node.parent.location):
+        move = move_.format(target_node.parent.location, target_node.location)
+    else :
+        move = jump_.format(target_node.parent.location, target_node.location)
+
+    print(move)
+
+    if target_node.location in exit_locs:
+        print(exit_.format(target_node.location))    
+
+
 
