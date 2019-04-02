@@ -1,6 +1,8 @@
 from node import *
 from math import sqrt
 
+# TODO ensure appropriate conversion between lists and tuples
+
 class Board:
 
     # size of the board
@@ -8,13 +10,13 @@ class Board:
    
     # exit locations for the pieces 
     all_exit_locations = {
-                        "red"   : [ [3,-3], [3,-2],  [3,-1],  [3,0]  ],
-                        "blue"  : [ [-3,3], [-2,3],  [-1,3],  [0,3]  ],
-                        "green" : [ [-3,0], [-2,-1], [-1,-2], [0,-3] ]
+                        "red"   : [ (3,-3), (3,-2),  (3,-1),  (3,0)  ],
+                        "blue"  : [ (-3,0), (-2,-1), (-1,-2), (0,-3) ],
+                        "green" : [ (-3,3), (-2,3),  (-1,3),  (0,3)  ]
                      }
 
     # coefficents for lines through exits (cf[0]q + cf[1]r + cf[2] = 0) 
-    exit_line_cfs = {"blue" : [1,1,3] , "red": [1,0,-3], "green" : [0,1,-3]}
+    exit_line_cfs = {"blue" : (1, 1, 3) , "red": (1, 0, -3), "green" : (0, 1, -3) }
 
     all_nodes            = []
     location_to_node_map = {}
@@ -28,7 +30,7 @@ class Board:
 
         # create all the nodes
         ran = range(-self.size, self.size+1)
-        for location in [[q,r] for q in ran for r in ran if -q-r in ran]:
+        for location in [(q,r) for q in ran for r in ran if -q-r in ran]:
             node = Node(location)
             self.all_nodes.append(node)
             self.location_to_node_map[tuple(location)] = node
@@ -53,7 +55,7 @@ class Board:
 
         return min_jump_cost
 
-    def get_traversable_nodes(self, piece_locations, blocks_locations):
+    def get_traversable_nodes(self, piece_locations, block_locations):
         '''returns a list of all the nodes that can be traversed'''
 
         traversable_nodes = []
@@ -61,7 +63,7 @@ class Board:
         for node in self.all_nodes:
             
             # a node can be traversed if it isn't occupied by the piece or a block
-            if (node.location not in piece_locations) and (node.location not in blocks_locations):
+            if (list(node.location) not in piece_locations) and (list(node.location) not in block_locations):
                 traversable_nodes.append(node)
 
         return traversable_nodes
@@ -76,11 +78,11 @@ class Board:
         col = 0
         for q in range(location[0]-1, location[0]+2):
             for r in range(r_start, r_end):
-                possible_neighbour = [q,r]
+                possible_neighbour = (q,r)
                 if possible_neighbour == location:
                     continue
                 if self.is_on_board(possible_neighbour):
-                    neighbours.append(self.location_to_node_map[tuple(possible_neighbour)])
+                    neighbours.append(self.location_to_node_map[possible_neighbour])
             col += 1
             
             if col == 1:
@@ -94,7 +96,7 @@ class Board:
     def is_on_board(self, location):
         '''returns True if a location is on the board'''
 
-        return tuple(location) in self.location_to_node_map
+        return location in self.location_to_node_map
 
     def reset_nodes(self):
         '''resets all the nodes on the board'''
@@ -105,7 +107,7 @@ class Board:
     def get_node(self, location):
         '''returns the node at a particular location'''
 
-        return self.location_to_node_map[tuple(location)]
+        return self.location_to_node_map[location]
 
     def get_landing_node(self, curr_node, node_to_jump_over):
         '''returns the landing node when when jumping from one node over another.
@@ -115,8 +117,8 @@ class Board:
         q = 2 * node_to_jump_over.location[0] - curr_node.location[0]
         r = 2 * node_to_jump_over.location[1] - curr_node.location[1]
 
-        landing_location = [q,r]
+        landing_location = (q,r)
 
-        return self.location_to_node_map[tuple(landing_location)] if self.is_on_board(landing_location) else None
+        return self.location_to_node_map[landing_location] if self.is_on_board(landing_location) else None
         
         

@@ -2,11 +2,13 @@ from board import *
 import sys
 
  # actions
-move_ = "MOVE from {} to {}"
-jump_ = "JUMP from {} to {}"
-exit_ = "EXIT from {}"
+move_ = "MOVE from {} to {}."
+jump_ = "JUMP from {} to {}."
+exit_ = "EXIT from {}."
 
 def findPath(data):
+    '''finds and prints the optimal path for each piece on the board from its
+       starting point to an exit'''
     
     board          = Board(3, data)
     exit_locations = board.all_exit_locations[data["colour"]]
@@ -20,7 +22,7 @@ def findPath(data):
         closed_nodes = []
 
         # get starting node and initialise it costs
-        starting_node = board.get_node(piece)
+        starting_node = board.get_node(tuple(piece))
         starting_node.f_cost = 0
         starting_node.g_cost = 0
 
@@ -78,11 +80,11 @@ def get_explorable_nodes(board, traversable_nodes,curr_node):
         # add node only if traversable
         if node in traversable_nodes:
             explorable_nodes.append(node)
-        
-        # find possible jumping locations
-        landing_node = board.get_landing_node(curr_node, node)
-        if landing_node and board.is_on_board(landing_node.location) and landing_node in traversable_nodes:
-            explorable_nodes.append(landing_node)
+        else:
+            # find possible jumping locations
+            landing_node = board.get_landing_node(curr_node, node)
+            if landing_node and board.is_on_board(landing_node.location) and landing_node in traversable_nodes:
+                explorable_nodes.append(landing_node)
 
     # print("Current:", curr_node.location)
     # print("Explorables:", [node.location for node in explorable_nodes])
