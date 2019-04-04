@@ -1,10 +1,12 @@
 # g_cost is the cost from starting node
 # h_cost is the cost from the target node
 # f_cost = g_cost + h_cost
-
+from PriorityQueue import*
 import math
 import helperFunctions
 import sys
+import time
+start_time = time.time()
 
 #Modified so that each node is stored in a dict with location as a key and then stores data
 class Node:
@@ -28,7 +30,7 @@ class combination:
     def __init__(self, coords):
         self.coords = set(coords) 
     def __str__(self):
-        return str(sorted(coords))
+        return str(sorted(self.coords))
     def __hash__(self):
         return hash( tuple(sorted(self.coords)))
     def __eq__(self, other):
@@ -111,6 +113,7 @@ exit_ = "EXIT from {}."
 
 
 def findPath(data):
+
     #creates an empty board
     board = Board(data)
 
@@ -120,34 +123,35 @@ def findPath(data):
     open_nodes = set()
     # nodes which we have evaluated
     closed_nodes = set()
+    #queue that stores the f_cost of each value
+    f_cost_queue = BinQueue()
     #converting to hashable
     start_loc = [tuple(l) for l in data["pieces"]]
     start_loc = combination(start_loc)
     #adding to the board
     board.addNode(start_loc)
+    f_cost_queue.put(start_loc, 0)
 
-    board.combination_data[start_loc].f_cost = 0;
+    #board.combination_data[start_loc].f_cost = 0;
     board.combination_data[start_loc].g_cost = 0;
     open_nodes.add(start_loc)
 
-
     while open_nodes:
-
-        currentNode = find_lowest_scoring(open_nodes, board)
-        # print(currentNode)
+        #a= time.time()
+        currentNode = f_cost_queue.get()
+        #print("--- %s seconds ---" % (time.time() - a))
+        # print(currentNo)
 
         #moves currentNode from open set to closed set
-        open_nodes.remove(currentNode)
+       ##print(currentNode)
+       #removes item if present
+        open_nodes.discard(currentNode)
         closed_nodes.add(currentNode)
         if not currentNode.coords:
             # current node is empty hence at exit
             print_path(start_loc, currentNode, board) 
             break
-        elif board.combination_data[currentNode].f_cost == None :
-            print("error no route found")
         else:  
-           # print(currentNode.coords)
-            #***************************
             for child in getChildren(currentNode, board):
                 #adds the comb to the board if not already initiated
                 board.addNode(child)
@@ -159,11 +163,11 @@ def findPath(data):
                     if (traversal_cost < board.combination_data[child].g_cost):
                       # set f cost of neighbour
                         board.combination_data[child].g_cost = traversal_cost
-                        board.combination_data[child].f_cost = traversal_cost + board.combination_data[child].h_cost
+                        f_cost_queue.put(child, traversal_cost + board.combination_data[child].h_cost)
                         # set parent of neighbour to curr   ent
                         board.combination_data[child].parent = currentNode
                         # if neighbour not in open, add neighbour to open
-  
+
                 
 
 
