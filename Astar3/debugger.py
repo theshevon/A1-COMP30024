@@ -5,7 +5,7 @@ class Debugger:
     piece_locns = None
 
     def set_colour(self, colour):
-        self.colour = colour
+        self.colour = colour.upper()
 
     def set_piece_locations(self, piece_locns):
         self.piece_locns = piece_locns

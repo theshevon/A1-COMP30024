@@ -270,7 +270,7 @@ def print_path(starting_node, target_node, board):
         debugger.piece_locns.remove(m)
 
     debugger.print_board(message=move)
-    time.sleep(0.5) # sleep used to show the pieces moving in a cinematic fashion
+    time.sleep(0.75) # sleep used to show the pieces moving in a cinematic fashion
     # print(move)
 
 
