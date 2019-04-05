@@ -5,8 +5,11 @@ from PriorityQueue import*
 import math
 import helperFunctions
 import sys
+from debugger import *
 import time
-start_time = time.time()
+
+# TODO: remove this
+debugger = Debugger()
 
 #Modified so that each node is stored in a dict with location as a key and then stores data
 class Node:
@@ -34,9 +37,8 @@ class combination:
     def __hash__(self):
         return hash( tuple(sorted(self.coords)))
     def __eq__(self, other):
+        # THIS IS WRONG CUZ DICTIONARY ORDERING CHANGES
         return self.coords == other.coords
-
-
 
 def jump(current, adjacent):
     return (2*adjacent[0] - current[0], 
@@ -117,7 +119,6 @@ def findPath(data):
     #creates an empty board
     board = Board(data)
 
-
     # a star algorithim
     # nodes for which we have calculated the f cost and need to be evaluated
     open_nodes = set()
@@ -132,11 +133,18 @@ def findPath(data):
     board.addNode(start_loc)
     f_cost_queue.put(start_loc, 0)
 
+    # TODO: remove this before submission
+    debugger.set_colour(data["colour"])
+    debugger.set_block_locns(data["blocks"])
+    debugger.set_piece_locations(start_loc.coords)
+    debugger.print_board(start_loc.coords)
+
     #board.combination_data[start_loc].f_cost = 0;
     board.combination_data[start_loc].g_cost = 0;
     open_nodes.add(start_loc)
 
     while open_nodes:
+        
         #a= time.time()
         currentNode = f_cost_queue.get()
         #print("--- %s seconds ---" % (time.time() - a))
@@ -245,19 +253,25 @@ def print_path(starting_node, target_node, board):
     move_start = board.combination_data[target_node].parent.coords - target_node.coords
     move_end =  target_node.coords - board.combination_data[target_node].parent.coords
 
-    #some nasty ass code, need to fix the popping
+    # some nasty ass code, need to fix the popping
     if move_end:
         move_start= move_start.pop()
         move_end = move_end.pop()
 
         if move_end in adjacentnodes(move_start):
             move = move_.format(move_start, move_end)
+            debugger.update(move_start, move_end)
         else :
             move = jump_.format(move_start, move_end)
+            debugger.update(move_start, move_end)
     else:
-        move= exit_.format(move_start.pop())
+        m = move_start.pop()
+        move= exit_.format(m)
+        debugger.piece_locns.remove(m)
 
-    print(move)
+    debugger.print_board(message=move)
+    time.sleep(0.5) # sleep used to show the pieces moving in a cinematic fashion
+    # print(move)
 
 
 

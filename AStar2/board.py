@@ -10,10 +10,10 @@ class Board:
    
     # exit locations for the pieces 
     all_exit_locations = {
-                        "red"   : [ (3,-3), (3,-2),  (3,-1),  (3,0)  ],
-                        "blue"  : [ (-3,0), (-2,-1), (-1,-2), (0,-3) ],
-                        "green" : [ (-3,3), (-2,3),  (-1,3),  (0,3)  ]
-                     }
+                            "red"   : [ (3,-3), (3,-2),  (3,-1),  (3,0)  ],
+                            "blue"  : [ (-3,0), (-2,-1), (-1,-2), (0,-3) ],
+                            "green" : [ (-3,3), (-2,3),  (-1,3),  (0,3)  ]
+                        }
 
     # coefficents for lines through exits (cf[0]q + cf[1]r + cf[2] = 0) 
     exit_line_cfs = {"blue" : (1, 1, 3) , "red": (1, 0, -3), "green" : (0, 1, -3) }
