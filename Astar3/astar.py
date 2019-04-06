@@ -1,32 +1,18 @@
 # g_cost is the cost from starting node
 # h_cost is the cost from the target node
 # f_cost = g_cost + h_cost
-from PriorityQueue import*
+from priority_queue import *
 import math
-import helperFunctions
 import sys
+from board import *
+from node import *
 from debugger import *
 import time
 
 # TODO: remove this
 debugger = Debugger()
 
-#Modified so that each node is stored in a dict with location as a key and then stores data
-class Node:
-    combination = set()
-    parent_combination = set()
-    g_cost = sys.maxsize
-    h_cost = None
-    f_cost = None
 
-    def __init__(self, combination):
-        self.combination = combination
-    # purely for debugging purposes
-    def print_info(self):
-        print("Parent:", self._combination)
-        print("G_Cost:", self.g_cost)
-        print("H_Cost:", self.h_cost)
-        print("F_Cost:", self.f_cost)
 
 class combination:
     coords = {}
@@ -45,68 +31,6 @@ def jump(current, adjacent):
         2*adjacent[1] - current[1] )  
 
 
-class Board:
-    pieces_colour = None
-    combination_data = {}
-    exit_locations = []
-    blockSet = set()
-    def __init__(self, data):
-        self.pieces_colour = data["colour"]
-        self.exit_locations= self.returnExits(self.pieces_colour)
-        self.blockSet = [tuple(l) for l in data["blocks"]] 
-
-
-    def getNode(self, combination):
-        return combination_data[combination]
-        #clears everything but the location and heuristic
-
-    #adds the heuristic for a combination, if comb is empty (ie all pieces have exited), heuristic is zero
-    def addHeuristic (self,combination):
-        tempCost = 0
-        for coord in combination.coords:
-            tempCost += self.estimateCost( coord, self.pieces_colour)
-        self.combination_data[combination].h_cost = tempCost
-    def addNode(self, comb):
-        if comb not in self.combination_data.keys():
-            self.combination_data[comb] = Node(comb)
-            self.addHeuristic(comb)
-    #returns the min possible moves from each node to any exit nodes
-    #Note doesn't inlcude cost of exiting board 
-    def estimateCost(self, coord, colour):
-        #coefficents for line cf[0]q + cf[1]r + cf[2] = 0 
-        cf = {"blue" : [1,1,3] , "red": [1,0,-3], "green" : [0,1,-3]}
-        
-        stepCost = None
-        jumpCOst = None
-        #Shortest number of nodes between the node and any exit node
-        stepCost = abs(cf[colour][0]*coord[0] + cf[colour][1]*coord[1] + cf[colour][2])
-        #Shortest number of moves between node and any exit node
-        #ie if the piece could jump whenever possible
-        #cost includes the cost of exiting the board
-        jumpCost = stepCost//2 + stepCost%2 +1
-        return jumpCost
-
-    def printBoard(self):
-        for comb in self.combination_data.keys():
-            print( "combination: {}".format(comb))
-            #self.tiles[location].print_info()
-            print(self.combination_data[combination].h_cost)
-        print("Number of Tiles:{}".format(len(self.combination_data.keys())))
-
-    def returnExits(self, colour):
-        exits = {
-        "red" : [(3, -3), (3, -2), (3,-1), (3,0)] , 
-        "blue" : [(-3, 0), (-2, -1), (-1,-2), (0,-3)], 
-        "green" : [(-3, 3), (-2, 3), (-1,3), (0,3)]}
-        return exits[colour]
-
-    def withinBoard(self, coord):
-        board_size = 3 
-        ran = range(-board_size, board_size + 1)
-        if (coord[0] in ran) and (coord[1] in ran) and (-coord[0] - coord[1] in ran):
-            return True
-        else:
-            return False
 
 # actions
 move_ = "MOVE from {} to {}."
@@ -126,21 +50,24 @@ def findPath(data):
     closed_nodes = set()
     #queue that stores the f_cost of each value
     f_cost_queue = BinQueue()
+
     #converting to hashable
     start_loc = [tuple(l) for l in data["pieces"]]
     start_loc = combination(start_loc)
+
     #adding to the board
     board.addNode(start_loc)
+
     f_cost_queue.put(start_loc, 0)
 
     # TODO: remove this before submission
-    debugger.set_colour(data["colour"])
+    debugger.set_colour(data["colour"][0])
     debugger.set_block_locns(data["blocks"])
     debugger.set_piece_locations(start_loc.coords)
     debugger.print_board(start_loc.coords)
 
     #board.combination_data[start_loc].f_cost = 0;
-    board.combination_data[start_loc].g_cost = 0;
+    board.combination_data[start_loc].g_cost = 0
     open_nodes.add(start_loc)
 
     while open_nodes:
@@ -149,12 +76,12 @@ def findPath(data):
         currentNode = f_cost_queue.get()
         #print("--- %s seconds ---" % (time.time() - a))
         # print(currentNo)
-
         #moves currentNode from open set to closed set
        ##print(currentNode)
        #removes item if present
         open_nodes.discard(currentNode)
         closed_nodes.add(currentNode)
+
         if not currentNode.coords:
             # current node is empty hence at exit
             print_path(start_loc, currentNode, board) 
@@ -167,6 +94,7 @@ def findPath(data):
                     open_nodes.add(child)
                         # if new path to neighbour is shorter or neighbour is not in open
                     traversal_cost = 1 + board.combination_data[currentNode].g_cost
+                    # print(traversal_cost)
                     
                     if (traversal_cost < board.combination_data[child].g_cost):
                       # set f cost of neighbour
@@ -175,10 +103,6 @@ def findPath(data):
                         # set parent of neighbour to curr   ent
                         board.combination_data[child].parent = currentNode
                         # if neighbour not in open, add neighbour to open
-
-                
-
-
 
     #board.printBoard()
 
@@ -209,10 +133,9 @@ def getChildren(pieceSet, board):
                 tempCombination.add(coord)
 
             childrenCombinations.append(combination(tempCombination))
-
     return childrenCombinations
-            
 
+            
 #returns list of adjacent nodes
 def adjacentnodes(loc):
     neighbours = []
@@ -271,7 +194,7 @@ def print_path(starting_node, target_node, board):
 
     debugger.print_board(message=move)
     time.sleep(0.75) # sleep used to show the pieces moving in a cinematic fashion
-    # print(move)
+    #print(move)
 
 
 
