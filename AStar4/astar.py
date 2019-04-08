@@ -40,10 +40,10 @@ def findPath(data):
     while not open_node_groups.is_empty():
         
         curr_node_group = open_node_groups.poll()
+        open_node_groups.clear();
         closed_node_groups.append(curr_node_group)
 
         if not curr_node_group.nodes:
-            print("Breaking")
             break
     
         for group in get_possible_successor_groups_old(board, curr_node_group, exit_nodes):
@@ -77,38 +77,6 @@ def findPath(data):
         # break
 
     print_path(starting_node_group, curr_node_group)
-
-def get_possible_successor_groups(board, curr_node_group, exit_nodes):
-
-    possible_groups = []
-
-    for node in curr_node_group.nodes:
-
-        explorable_nodes = []
-
-        for neighbour_node in board.get_neighbouring_nodes(node):
-            if board.is_on_board(neighbour_node):
-                if (not board.is_traversable(neighbour_node)) or (neighbour_node in curr_node_group.nodes):
-                    landing_node = board.get_landing_node(node, neighbour_node)
-                    if landing_node not in curr_node_group.nodes:
-                        explorable_nodes.append(landing_node)
-                else:
-                    explorable_nodes.append(neighbour_node)
-            elif node in exit_nodes:
-                explorable_nodes.append(tuple())
-
-        for explorable_node in explorable_nodes:
-            temp_group = curr_node_group.nodes.copy()
-            temp_group.remove(node)
-            if explorable_node:
-                temp_group.add(explorable_node)
-            
-            if temp_group not in possible_groups:
-                possible_groups.append(NodeGroup(temp_group))
-    
-    return possible_groups
-    
-
 
 def get_possible_successor_groups_old(board, curr_node_group, exit_nodes):
     '''returns all the possible node groups based on the possible successors

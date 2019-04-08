@@ -34,3 +34,9 @@ class NodeGroupPriorityQueue:
         node_groups = [item[2] for item in self.heap] 
 
         return node_group in node_groups
+
+    def clear(self):
+        '''clears the contents of the priority queue'''
+
+        self.heap = []
+        self.next_element_id = 0
