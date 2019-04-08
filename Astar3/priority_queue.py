@@ -12,3 +12,6 @@ class BinQueue:
 		heapq.heappush(self.elements, (priority, self.id , item))
 	def get (self):
 		return heapq.heappop(self.elements)[2]
+	def clear(self):
+		self.elements = []
+		self.id = 0

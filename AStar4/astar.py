@@ -40,7 +40,7 @@ def findPath(data):
     while not open_node_groups.is_empty():
         
         curr_node_group = open_node_groups.poll()
-        open_node_groups.clear();
+        # open_node_groups.clear();
         closed_node_groups.append(curr_node_group)
 
         if not curr_node_group.nodes:
@@ -53,9 +53,7 @@ def findPath(data):
 
                 traversal_cost = 1 + curr_node_group.g_cost
 
-                not_in_open = False
-                if not open_node_groups.contains(group):
-                    not_in_open = True
+                not_in_open = False if open_node_groups.contains(group) else True
 
                 if (traversal_cost < group.g_cost) or (not_in_open):
 
