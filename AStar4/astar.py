@@ -21,20 +21,19 @@ def findPath(data):
     open_node_groups = NodeGroupPriorityQueue()
 
     # nodes which we have evaluated
-    closed_node_groups = []
+    closed_node_groups = set()
 
     starting_node_group = NodeGroup([tuple(location) for location in data["pieces"]])
     starting_node_group.g_cost = 0
-    open_node_groups.add(0, starting_node_group)
+    open_node_groups.add(starting_node_group.g_cost, starting_node_group)
 
     while not open_node_groups.is_empty():
         
-        curr_node_group = open_node_groups.poll()[2]
-        closed_node_groups.append(curr_node_group)
+        curr_node_group = open_node_groups.poll()
+        closed_node_groups.add(curr_node_group)
 
         # print(sorted(curr_node_group.nodes))
-        if (len(curr_node_group.nodes) == 1) and (curr_node_group.nodes[0] in exit_nodes):
-            print("hi") 
+        if not curr_node_group.nodes:
             break
 
         for group in get_possible_successor_groups(board, curr_node_group, exit_nodes):

@@ -4,7 +4,7 @@ class NodeGroupPriorityQueue:
 
     def __init__(self):
         self.heap = []
-        self.next_element_id = 1
+        self.next_element_id = 0
     
     def is_empty(self):
         '''returns True if the queue is empty'''
@@ -25,9 +25,11 @@ class NodeGroupPriorityQueue:
     def poll(self):
         '''removes and returns the node group with the lowest f cost'''
 
-        return heapq.heappop(self.heap)
+        return heapq.heappop(self.heap)[2]
 
     def contains(self, node_group):
+        '''returns True if a particular node group is in the queue'''
+        
         node_groups = [item[2] for item in self.heap] 
 
         return node_group in node_groups

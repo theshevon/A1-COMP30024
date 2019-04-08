@@ -12,10 +12,7 @@ import time
 # TODO: remove this
 debugger = Debugger()
 
-# actions
-move_ = "MOVE from {} to {}."
-jump_ = "JUMP from {} to {}."
-exit_ = "EXIT from {}."
+
 
 class combination:
     coords = {}
@@ -26,6 +23,7 @@ class combination:
     def __hash__(self):
         return hash( tuple(sorted(self.coords)))
     def __eq__(self, other):
+        # THIS IS WRONG CUZ DICTIONARY ORDERING CHANGES
         return self.coords == other.coords
 
 def jump(current, adjacent):
@@ -33,12 +31,24 @@ def jump(current, adjacent):
         2*adjacent[1] - current[1] )  
 
 
+
+# actions
+move_ = "MOVE from {} to {}."
+jump_ = "JUMP from {} to {}."
+exit_ = "EXIT from {}."
+
+
 def findPath(data):
 
+    #creates an empty board
     board = Board(data)
 
+    # a star algorithim
+    # nodes for which we have calculated the f cost and need to be evaluated
     open_nodes = set()
+    # nodes which we have evaluated
     closed_nodes = set()
+    #queue that stores the f_cost of each value
     f_cost_queue = BinQueue()
 
     #converting to hashable
@@ -62,8 +72,13 @@ def findPath(data):
 
     while open_nodes:
         
+        #a= time.time()
         currentNode = f_cost_queue.get()
-   
+        #print("--- %s seconds ---" % (time.time() - a))
+        # print(currentNo)
+        #moves currentNode from open set to closed set
+       ##print(currentNode)
+       #removes item if present
         open_nodes.discard(currentNode)
         closed_nodes.add(currentNode)
 
@@ -79,13 +94,22 @@ def findPath(data):
                     open_nodes.add(child)
                         # if new path to neighbour is shorter or neighbour is not in open
                     traversal_cost = 1 + board.combination_data[currentNode].g_cost
+                    # print(traversal_cost)
                     
                     if (traversal_cost < board.combination_data[child].g_cost):
+                      # set f cost of neighbour
                         board.combination_data[child].g_cost = traversal_cost
                         f_cost_queue.put(child, traversal_cost + board.combination_data[child].h_cost)
+                        # set parent of neighbour to curr   ent
                         board.combination_data[child].parent = currentNode
+                        # if neighbour not in open, add neighbour to open
 
-    
+    #board.printBoard()
+
+#returns a list of the node locations that can be visited from the current node
+#If a jump is required it will include first the location of the jumped tile
+# than the location of the target tile
+#example return value [Location, [jumpedLocation, Location], atLocation]
 def getChildren(pieceSet, board):
     childrenCombinations = []
     for piece in pieceSet.coords:
@@ -130,7 +154,17 @@ def adjacentnodes(loc):
             r_end -= 1
  
     return neighbours
-   
+
+
+
+def find_lowest_scoring(open_nodes, board):
+    lowestScore= sys.maxsize
+    lowestScoringComb = None
+    for comb in open_nodes:
+        if board.combination_data[comb].f_cost != None and board.combination_data[comb].f_cost< lowestScore :
+            lowestScoringComb = comb
+            lowestScore = board.combination_data[comb].f_cost
+    return lowestScoringComb       
 
 def print_path(starting_node, target_node, board):
     '''prints the traversal path'''

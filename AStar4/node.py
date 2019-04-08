@@ -2,19 +2,21 @@ import sys
 
 class NodeGroup:
 
-    # set of nodes that make up the group
-    nodes = None
-
-    parent = None
-    g_cost = sys.maxsize
-    h_cost = None
-    f_cost = None
+    parent_group = None
+    g_cost       = sys.maxsize
+    h_cost       = None
+    f_cost       = None
 
     def __init__(self, nodes):
-        self.nodes = nodes
+
+        # set of nodes that make up the group
+        self.nodes = set(nodes)
 
     def __eq__(self, other):
-        return other and sorted(self.nodes) == sorted(other.nodes)
+        return other and type(other) == NodeGroup and self.nodes == other.nodes
+
+    def __str__(self):
+        return str(sorted(self.nodes))
 
     def copy(self):
         return NodeGroup(self.nodes)
@@ -26,5 +28,5 @@ class NodeGroup:
         print("G_Cost:", self.g_cost)
         print("H_Cost:", self.h_cost)
         print("F_Cost:", self.f_cost)
-        if self.parent is not None:
-            print("Parents: ", list(self.parent.nodes))
+        if self.parent_group is not None:
+            print("Parents: ", list(self.parent_group.nodes))

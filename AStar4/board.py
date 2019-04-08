@@ -13,8 +13,8 @@ class Board:
     # coefficents for lines through exits (cf[0]q + cf[1]r + cf[2] = 0) 
     exit_line_cfs = {"blue" : (1, 1, 3) , "red": (1, 0, -3), "green" : (0, 1, -3) }
 
-    all_nodes          = []
-    traversable_nodes  = []
+    all_nodes          = set()
+    traversable_nodes  = set()
 
     def __init__(self, data):
         self.initialise_nodes(data["colour"], data["blocks"])
@@ -27,10 +27,10 @@ class Board:
         ran = range(-self.size, self.size+1)
         for node in [(q,r) for q in ran for r in ran if -q-r in ran]:
             
-            self.all_nodes.append(node)
+            self.all_nodes.add(node)
 
             if list(node) not in block_locations:
-                self.traversable_nodes.append(node)
+                self.traversable_nodes.add(node)
 
     def get_heuristic_cost(self, node_group, colour):
         '''adds the heuristic cost for the node group'''
@@ -45,7 +45,7 @@ class Board:
         '''returns the minimum possible moves from each node to any exit nodes'''
         
         # shortest number of 'move' actions to reach an exit node
-        min_move_cost = abs(cfs[0]*node[0] + cfs[1]*node[1] + cfs[2])
+        min_move_cost = abs(cfs[0] * node[0] + cfs[1] * node[1] + cfs[2])
 
         # shortest number of  'jump' actions to reach an exit node
         min_jump_cost = min_move_cost // 2 + min_move_cost % 2 + 1
