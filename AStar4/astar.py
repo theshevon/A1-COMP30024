@@ -2,11 +2,15 @@ from board import *
 from node import *
 from priority_queue import NodeGroupPriorityQueue
 import sys
+from debugger import *
+import time
 
  # actions
 move_ = "MOVE from {} to {}."
 jump_ = "JUMP from {} to {}."
 exit_ = "EXIT from {}."
+
+debugger = Debugger()
 
 
 def findPath(data):
@@ -21,23 +25,30 @@ def findPath(data):
     open_node_groups = NodeGroupPriorityQueue()
 
     # nodes which we have evaluated
-    closed_node_groups = set()
+    closed_node_groups = []
 
     starting_node_group = NodeGroup([tuple(location) for location in data["pieces"]])
     starting_node_group.g_cost = 0
     open_node_groups.add(starting_node_group.g_cost, starting_node_group)
 
+    # TODO: reove this before submission
+    debugger.set_colour(colour)
+    debugger.set_block_locns(data["blocks"])
+    debugger.set_piece_locations(starting_node_group.nodes)
+    debugger.print_board(starting_node_group.nodes)
+
     while not open_node_groups.is_empty():
         
         curr_node_group = open_node_groups.poll()
-        closed_node_groups.add(curr_node_group)
+        closed_node_groups.append(curr_node_group)
 
-        # print(sorted(curr_node_group.nodes))
         if not curr_node_group.nodes:
+            print("Breaking")
             break
-
-        for group in get_possible_successor_groups(board, curr_node_group, exit_nodes):
+    
+        for group in get_possible_successor_groups_old(board, curr_node_group, exit_nodes):
             
+            # print("Group:", group.nodes)
             if group not in closed_node_groups:
 
                 traversal_cost = 1 + curr_node_group.g_cost
@@ -58,11 +69,48 @@ def findPath(data):
 
                     # if neighbour not in open, add neighbour to open
                     if not_in_open:
+                        # print("Adding to open: " ,group.nodes)
                         open_node_groups.add(group.f_cost, group)
         
+        # print(len(open_node_groups.heap))
+        # print(sorted([n[2].nodes for n in open_node_groups.heap]))
+        # break
+
     print_path(starting_node_group, curr_node_group)
 
 def get_possible_successor_groups(board, curr_node_group, exit_nodes):
+
+    possible_groups = []
+
+    for node in curr_node_group.nodes:
+
+        explorable_nodes = []
+
+        for neighbour_node in board.get_neighbouring_nodes(node):
+            if board.is_on_board(neighbour_node):
+                if (not board.is_traversable(neighbour_node)) or (neighbour_node in curr_node_group.nodes):
+                    landing_node = board.get_landing_node(node, neighbour_node)
+                    if landing_node not in curr_node_group.nodes:
+                        explorable_nodes.append(landing_node)
+                else:
+                    explorable_nodes.append(neighbour_node)
+            elif node in exit_nodes:
+                explorable_nodes.append(tuple())
+
+        for explorable_node in explorable_nodes:
+            temp_group = curr_node_group.nodes.copy()
+            temp_group.remove(node)
+            if explorable_node:
+                temp_group.add(explorable_node)
+            
+            if temp_group not in possible_groups:
+                possible_groups.append(NodeGroup(temp_group))
+    
+    return possible_groups
+    
+
+
+def get_possible_successor_groups_old(board, curr_node_group, exit_nodes):
     '''returns all the possible node groups based on the possible successors
        of each individual node in the group'''
     
@@ -71,38 +119,45 @@ def get_possible_successor_groups(board, curr_node_group, exit_nodes):
 
     for node in nodes:
 
-        for explorable_node in get_explorable_nodes(board, node, exit_nodes):
+        for explorable_node in get_explorable_nodes(board, node, nodes, exit_nodes):
 
             temp_group = nodes.copy()
             temp_group.remove(node)
 
             if explorable_node:
-                temp_group.append(explorable_node)
+                temp_group.add(explorable_node)
         
-            possible_groups.append(NodeGroup(temp_group))
+            if temp_group not in possible_groups:
+                possible_groups.append(NodeGroup(temp_group))
 
+    # print([group.nodes for group in possible_groups])
     return possible_groups
 
-def get_explorable_nodes(board, curr_node, exit_nodes):
+def get_explorable_nodes(board, node, nodes, exit_nodes):
     '''returns a list of all the nodes that can be explored from the current
         node'''
     
-    explorable_nodes = []
-
-    for node in board.get_neighbouring_nodes(curr_node):
+    explorable_nodes = set()
+    
+    for neighbour_node in board.get_neighbouring_nodes(node):
         
-        if board.is_on_board(node):
-
-            if board.is_traversable(node):
-                explorable_nodes.append(node)
-            else:
+        # print("Neighbour:", neighbour_node)
+        if board.is_on_board(neighbour_node):
+            # print("Neighbour on board:", neighbour_node)
+            if (not board.is_traversable(neighbour_node)) or (neighbour_node in nodes):
+                # print("Blocked:", neighbour_node)
                 # find possible jumping locations
-                landing_node = board.get_landing_node(curr_node, node)
-                if landing_node and board.is_traversable(landing_node):
-                    explorable_nodes.append(landing_node)
-        elif node in exit_nodes:
-            explorable_nodes.append(tuple())
+                landing_node = board.get_landing_node(node, neighbour_node)
+                # print("Landing:", landing_node)
+                if landing_node and landing_node not in nodes:
+                    explorable_nodes.add(landing_node)
+            else:
+                explorable_nodes.add(neighbour_node)
 
+        elif node in exit_nodes:
+            explorable_nodes.add(tuple())
+
+    # print("Explorable:", explorable_nodes)
     return explorable_nodes
 
 def print_path(starting_node_group, target_node_group):
@@ -112,5 +167,8 @@ def print_path(starting_node_group, target_node_group):
     if target_node_group.parent != starting_node_group:
         print_path(starting_node_group, target_node_group.parent)
     
-    print(target_node_group.nodes)
+    debugger.set_piece_locations(target_node_group.nodes)
+    debugger.print_board()
+    time.sleep(0.75)
+    # print(target_node_group.nodes)
 

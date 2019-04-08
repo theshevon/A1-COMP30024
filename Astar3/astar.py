@@ -85,10 +85,15 @@ def findPath(data):
                         f_cost_queue.put(child, traversal_cost + board.combination_data[child].h_cost)
                         board.combination_data[child].parent = currentNode
 
+        # print(len(open_nodes))
+        # print(sorted([c.coords for c in open_nodes]))
+        # break
     
 def getChildren(pieceSet, board):
     childrenCombinations = []
     for piece in pieceSet.coords:
+        
+        
         explorableCoords = []
         for loc in adjacentnodes(piece):
             if board.withinBoard(loc):
@@ -101,6 +106,8 @@ def getChildren(pieceSet, board):
             elif( piece in board.exit_locations):
                 #appends an empty tuple if the piece exits
                 explorableCoords.append(tuple())
+
+
         for coord in explorableCoords:
             tempCombination = pieceSet.coords.copy()
             tempCombination.remove(piece)
@@ -132,35 +139,46 @@ def adjacentnodes(loc):
     return neighbours
    
 
+# def print_path(starting_node, target_node, board):
+#     '''prints the traversal path'''
+
+#     # base condition
+#     if board.combination_data[target_node].parent != starting_node:
+#         print_path(starting_node, board.combination_data[target_node].parent, board)
+
+#     move_start = board.combination_data[target_node].parent.coords - target_node.coords
+#     move_end =  target_node.coords - board.combination_data[target_node].parent.coords
+
+#     # some nasty ass code, need to fix the popping
+#     if move_end:
+#         move_start= move_start.pop()
+#         move_end = move_end.pop()
+
+#         if move_end in adjacentnodes(move_start):
+#             move = move_.format(move_start, move_end)
+#             debugger.update(move_start, move_end)
+#         else :
+#             move = jump_.format(move_start, move_end)
+#             debugger.update(move_start, move_end)
+#     else:
+#         m = move_start.pop()
+#         move= exit_.format(m)
+#         debugger.piece_locns.remove(m)
+
+#     debugger.print_board(message=move)
+#     time.sleep(0.75) # sleep used to show the pieces moving in a cinematic fashion
+#     # print(move)
+
+
 def print_path(starting_node, target_node, board):
     '''prints the traversal path'''
 
-    # base condition
+    # recursive case
     if board.combination_data[target_node].parent != starting_node:
         print_path(starting_node, board.combination_data[target_node].parent, board)
+    
+    print(target_node.coords)
 
-    move_start = board.combination_data[target_node].parent.coords - target_node.coords
-    move_end =  target_node.coords - board.combination_data[target_node].parent.coords
-
-    # some nasty ass code, need to fix the popping
-    if move_end:
-        move_start= move_start.pop()
-        move_end = move_end.pop()
-
-        if move_end in adjacentnodes(move_start):
-            move = move_.format(move_start, move_end)
-            debugger.update(move_start, move_end)
-        else :
-            move = jump_.format(move_start, move_end)
-            debugger.update(move_start, move_end)
-    else:
-        m = move_start.pop()
-        move= exit_.format(m)
-        debugger.piece_locns.remove(m)
-
-    debugger.print_board(message=move)
-    time.sleep(0.75) # sleep used to show the pieces moving in a cinematic fashion
-    #print(move)
 
 
 
