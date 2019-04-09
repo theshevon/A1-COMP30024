@@ -1,6 +1,7 @@
 from board import *
 from node_group import *
 from priority_queue import *
+from math import sqrt
 
 class PathFinder:
     
@@ -99,17 +100,39 @@ class PathFinder:
 
         return successor_groups
         
-    def print_path(self, target_node_group, count=0):
-        '''prints the traversal path'''
+    def get_dist(self, node_1, node_2):
+        '''returns the euclidean distance between two nodes'''
 
-        count += 1
+        return sqrt((node_1[0] - node_2[0])**2 + (node_1[1] - node_2[1])**2)
+
+    def print_path(self, target_node_group):
+
         # recursive case
         if target_node_group.parent != self.init_node_group:
-            self.print_path(target_node_group.parent, count)
-        
-        print("{} {}".format(count, target_node_group.nodes))
+            self.print_path(target_node_group.parent)
 
+        # -- base case
+
+        start = (target_node_group.parent.nodes - target_node_group.nodes).copy().pop()
+        end   = (target_node_group.nodes - target_node_group.parent.nodes).copy()
+
+
+        if end:
             
+            end   = end.pop()
+
+            # if the action is to a neighbour, it will be a 'MOVE', otherwise 
+            # a 'JUMP'
+            if (self.get_dist(start, end) == 1):
+                print(self.move_.format(start, end))
+            else:
+                print(self.jump_.format(start, end))
+
+        else:
+            print(self.exit_.format(start))
+        
+
+    
 
                         
                 
