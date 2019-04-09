@@ -14,7 +14,9 @@ class NodeGroupPriorityQueue:
     def add(self, priority, node_group):
         '''adds a node to the priority queue'''
 
-        # TODO consider putting len group as the second element
+        if (o)
+
+
         heapq.heappush(self.heap, (priority, self.next_element_id, node_group))
         self.next_element_id += 1
     
