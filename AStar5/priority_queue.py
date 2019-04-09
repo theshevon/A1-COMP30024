@@ -1,5 +1,3 @@
-import heapq
-
 class NodeGroupPriorityQueue:
 
     def __init__(self):
@@ -32,15 +30,15 @@ class NodeGroupPriorityQueue:
     def poll(self):
         '''removes and returns the node group with the lowest f cost'''
 
-        node_group = heapq.heappop(self.heap)[2]
+        node_group = self.heap.pop(0)[2]
         self.node_groups_to_record_map.pop(node_group)
 
         return node_group
 
     def heapify(self):
         '''restructures the heap'''
-
-        heapq.heapify(self.heap)
+        
+        self.heap.sort()
 
     def get_item_index(self, node_group):
         '''returns True if a particular node group is in the queue'''
