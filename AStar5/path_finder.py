@@ -3,6 +3,11 @@ from node_group import *
 from priority_queue import *
 
 class PathFinder:
+    
+    # actions
+    move_ = "MOVE from {} to {}."
+    jump_ = "JUMP from {} to {}."
+    exit_ = "EXIT from {}."
 
     def __init__(self, data):
 
@@ -45,7 +50,7 @@ class PathFinder:
 
                         self.open_node_groups.add(f_cost, successor_group)
 
-            # self.open_node_groups.heapify()
+            self.open_node_groups.heapify()
 
         self.print_path(curr_node_group)
 
@@ -94,14 +99,15 @@ class PathFinder:
 
         return successor_groups
         
-    def print_path(self, target_node_group):
+    def print_path(self, target_node_group, count=0):
         '''prints the traversal path'''
 
+        count += 1
         # recursive case
         if target_node_group.parent != self.init_node_group:
-            self.print_path(target_node_group.parent)
+            self.print_path(target_node_group.parent, count)
         
-        print(target_node_group.nodes)
+        print("{} {}".format(count, target_node_group.nodes))
 
             
 

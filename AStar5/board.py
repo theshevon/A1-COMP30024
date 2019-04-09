@@ -5,11 +5,11 @@ class Board:
     size          = 3 
     all_nodes     = set()
     blocked_nodes = set()
-    exit_nodes =  {
-                    "red"   : { (3,-3), (3,-2),  (3,-1),  (3,0) },
-                    "blue"  : { (-3,0), (-2,-1), (-1,-2), (0,-3) },
-                    "green" : { (-3,3), (-2,3),  (-1,3),  (0,3)  }
-                  }
+    exit_nodes    = {
+                        "red"   : { (3,-3), (3,-2),  (3,-1),  (3,0)  },
+                        "blue"  : { (-3,0), (-2,-1), (-1,-2), (0,-3) },
+                        "green" : { (-3,3), (-2,3),  (-1,3),  (0,3)  }
+                    }
 
     # coefficents for lines through exits (cf[0]q + cf[1]r + cf[2] = 0) 
     exit_line_cfs = {"blue" : (1, 1, 3) , "red": (1, 0, -3), "green" : (0, 1, -3) }
@@ -25,7 +25,7 @@ class Board:
             self.blocked_nodes.add(node)
 
     def is_on_board(self, node):
-        '''returns true if a node is on a board'''
+        '''returns True if a given node is on a board'''
 
         return node in self.all_nodes
 

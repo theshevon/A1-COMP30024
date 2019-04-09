@@ -70,7 +70,7 @@ def findPath(data):
 
         if not currentNode.coords:
             # current node is empty hence at exit
-            print_path(start_loc, currentNode, board, 0) 
+            print_path(start_loc, currentNode, board) 
             break
         else:  
             for child in getChildren(currentNode, board):
@@ -157,21 +157,21 @@ def adjacentnodes(loc):
 
 #         if move_end in adjacentnodes(move_start):
 #             move = move_.format(move_start, move_end)
-#             debugger.update(move_start, move_end)
+#             # debugger.update(move_start, move_end)
 #         else :
 #             move = jump_.format(move_start, move_end)
-#             debugger.update(move_start, move_end)
+#             # debugger.update(move_start, move_end)
 #     else:
 #         m = move_start.pop()
 #         move= exit_.format(m)
-#         debugger.piece_locns.remove(m)
+#         # debugger.piece_locns.remove(m)
 
-#     debugger.print_board(message=move)
-#     time.sleep(0.75) # sleep used to show the pieces moving in a cinematic fashion
-#     # print(move)
+#     # debugger.print_board(message=move)
+#     # time.sleep(0.75) # sleep used to show the pieces moving in a cinematic fashion
+#     print(move)
 
 
-def print_path(starting_node, target_node, board, count):
+def print_path(starting_node, target_node, board, count=0):
     '''prints the traversal path'''
     count += 1
     # recursive case
