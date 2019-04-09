@@ -50,8 +50,8 @@ class PathFinder:
 
                         self.open_node_groups.add(f_cost, successor_group)
 
-            self.open_node_groups.heapify()
-
+            # self.open_node_groups.heapify()
+            
         self.print_path(curr_node_group)
 
     def get_successor_groups(self, curr_node_group):
