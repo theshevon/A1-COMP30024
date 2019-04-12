@@ -2,6 +2,8 @@ from board import *
 from node_group import *
 from priority_queue import *
 from math import sqrt
+from debugger import *
+import time
 
 class PathFinder:
     
@@ -10,19 +12,27 @@ class PathFinder:
     jump_ = "JUMP from {} to {}."
     exit_ = "EXIT from {}."
 
+    debugger = Debugger()
+
     def __init__(self, data):
 
         self.board  = Board(data)
         self.colour = data["colour"]
         self.exits  = self.board.get_exit_nodes(self.colour)
 
-        self.open_node_groups   = NodeGroupPriorityQueue()
+        self.open_node_groups   = NodeGroupQueue()
         self.closed_node_groups = set()
 
         self.init_node_group = NodeGroup(set([tuple(node) for node in data["pieces"]]))
         self.init_node_group.g_cost = 0
         
         self.open_node_groups.add(0, self.init_node_group)
+
+
+        self.debugger.set_colour(data["colour"][0])
+        self.debugger.set_block_locns(data["blocks"])
+        self.debugger.set_piece_locations(self.init_node_group.nodes)
+        self.debugger.print_board(self.init_node_group.nodes, debug=False)
 
     def find_path(self):
 
@@ -124,12 +134,17 @@ class PathFinder:
             # if the action is to a neighbour, it will be a 'MOVE', otherwise 
             # a 'JUMP'
             if (self.get_dist(start, end) == 1):
-                print(self.move_.format(start, end))
+                # print(self.move_.format(start, end))
+                self.debugger.update(start, end)
             else:
-                print(self.jump_.format(start, end))
-
+                # print(self.jump_.format(start, end))
+                self.debugger.update(start, end)
         else:
-            print(self.exit_.format(start))
+            # print(self.exit_.format(start))
+            self.debugger.piece_locns.remove(start)
+
+        self.debugger.print_board()
+        time.sleep(0.75) # sleep used to show the pieces moving in a cinematic fashion
         
 
     

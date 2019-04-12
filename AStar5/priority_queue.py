@@ -1,4 +1,4 @@
-class NodeGroupPriorityQueue:
+class NodeGroupQueue:
 
     def __init__(self):
         self.heap = []
@@ -20,6 +20,7 @@ class NodeGroupPriorityQueue:
             self.heap.append(record)
 
         self.node_groups_to_record_map[node_group] = record
+
         self.next_element_id += 1
     
     def peek(self):

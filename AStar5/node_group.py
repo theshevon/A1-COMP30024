@@ -18,4 +18,3 @@ class NodeGroup:
 
     def __str__(self):
         return str(sorted(self.nodes))
-    

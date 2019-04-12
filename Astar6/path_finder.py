@@ -8,7 +8,7 @@ import time
 class PathFinder:
     
     # TODO: remove this
-    debugger = Debugger()
+    # debugger = Debugger()
     # actions
     move_ = "MOVE from {} to {}."
     jump_ = "JUMP from {} to {}."
@@ -29,14 +29,12 @@ class PathFinder:
         self.open_node_groups.add(0, self.init_node_group)
 
             # TODO: reove this before submission
-        self.debugger.set_colour(data["colour"])
-        self.debugger.set_block_locns(data["blocks"])
-        self.debugger.set_piece_locations(self.init_node_group.nodes)
+            # self.debugger.set_colour(data["colour"])
+            # self.debugger.set_block_locns(data["blocks"])
+            # self.debugger.set_piece_locations(self.init_node_group.nodes)
 
     def find_path(self):
 
-
-    	
         while self.open_node_groups.heap:
 
             curr_node_group = self.open_node_groups.poll()
@@ -135,17 +133,17 @@ class PathFinder:
             # a 'JUMP'
             if (self.get_dist(start, end) == 1):
                 print(self.move_.format(start, end))
-                self.debugger.update(start, end)
+                # self.debugger.update(start, end)
             else:
                 print(self.jump_.format(start, end))
-                self.debugger.update(start, end)
+                # self.debugger.update(start, end)
 
         else:
             print(self.exit_.format(start))
-            self.debugger.piece_locns.remove(start)
+            # self.debugger.piece_locns.remove(start)
 
-        self.debugger.print_board(message = )
-        time.sleep(1) # sleep used to show the pieces moving in a cinematic fashion
+        # self.debugger.print_board()
+        # time.sleep(1) # sleep used to show the pieces moving in a cinematic fashion
         
 
     

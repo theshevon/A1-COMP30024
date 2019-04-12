@@ -5,6 +5,7 @@ class Board:
     combination_data = {}
     exit_locations = []
     blockSet = set()
+    
     def __init__(self, data):
         self.pieces_colour = data["colour"]
         self.exit_locations= self.returnExits(self.pieces_colour)

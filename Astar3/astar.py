@@ -72,19 +72,19 @@ def findPath(data):
             # current node is empty hence at exit
             print_path(start_loc, currentNode, board) 
             break
-        else:  
-            for child in getChildren(currentNode, board):
-                #adds the comb to the board if not already initiated
-                board.addNode(child)
-                if child not in closed_nodes:
-                    open_nodes.add(child)
-                        # if new path to neighbour is shorter or neighbour is not in open
-                    traversal_cost = 1 + board.combination_data[currentNode].g_cost
-                    
-                    if (traversal_cost < board.combination_data[child].g_cost):
-                        board.combination_data[child].g_cost = traversal_cost
-                        f_cost_queue.put(child, traversal_cost + board.combination_data[child].h_cost)
-                        board.combination_data[child].parent = currentNode
+
+        for child in getChildren(currentNode, board):
+            #adds the comb to the board if not already initiated
+            board.addNode(child)
+            if child not in closed_nodes:
+                open_nodes.add(child)
+                    # if new path to neighbour is shorter or neighbour is not in open
+                traversal_cost = 1 + board.combination_data[currentNode].g_cost
+                
+                if (traversal_cost < board.combination_data[child].g_cost):
+                    board.combination_data[child].g_cost = traversal_cost
+                    f_cost_queue.put(child, traversal_cost + board.combination_data[child].h_cost)
+                    board.combination_data[child].parent = currentNode
 
         # print(len(open_nodes))
         # print(sorted([c.coords for c in open_nodes]))
