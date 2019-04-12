@@ -158,7 +158,7 @@ class PathFinder():
 
             # if the action is to a neighbour, it will be a 'MOVE', otherwise 
             # a 'JUMP'
-            if (self.get_dist(start, end) == 1):
+            if (self.get_dist(start, end) <= sqrt(2)):
                 print(self.move_.format(start, end))
                 # self.debugger.update(start, end)
             else:
